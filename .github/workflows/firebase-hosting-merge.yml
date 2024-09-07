@@ -20,9 +20,14 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
-      - uses: subosito/flutter-action@v1
+      - name: Setup Dart and Flutter
+        uses: subosito/flutter-action@v2
+        id: flutter-action
         with:
-          channel: 'dev'
+          architecture: x64
+      - run: |
+          git config --global --add safe.directory /opt/hostedtoolcache/flutter/${{ steps.flutter-action.outputs.CHANNEL }}-${{ steps.flutter-action.outputs.VERSION }}-${{ steps.flutter-action.outputs.ARCHITECTURE }}
+          flutter --version
       - name: 'Run flutter pub get'
         run: flutter pub get
       #    - name: 'Run Test(s)'

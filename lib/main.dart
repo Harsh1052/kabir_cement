@@ -1,19 +1,20 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kabir_stock/models/column.dart';
 import 'package:kabir_stock/models/line_model.dart';
 
 import 'add_stock_screen.dart';
 import 'firebase_services.dart';
 
-void main() async{
-
-   WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptions(apiKey: 'AIzaSyAAniUiAlna8vx0UBtSz8QKntLoQZQq2Pg', appId: '1:890134903342:web:169e199301bf876356fdbf', messagingSenderId: '890134903342', projectId: 'kabir-cement'
-
-    )
-  );
+      options: FirebaseOptions(
+          apiKey: 'AIzaSyAAniUiAlna8vx0UBtSz8QKntLoQZQq2Pg',
+          appId: '1:890134903342:web:169e199301bf876356fdbf',
+          messagingSenderId: '890134903342',
+          projectId: 'kabir-cement'));
 
   runApp(const MyApp());
 }
@@ -45,7 +46,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-   String currentView = 'Line';
+  String currentView = 'Line';
   final List<DataColumn> lineColumns = const <DataColumn>[
     DataColumn(label: Text('Date')),
     DataColumn(label: Text('L. Name')),
@@ -73,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         lineData.addAll(value);
         rows = lineData.reversed.toList().map((e) {
           return DataRow(cells: [
-            DataCell(Text('${e.date.year}-${e.date.month}-${e.date.day}')),
+            DataCell(Text( DateFormat("MMMM dd, yyyy").format(e.date))),
             DataCell(Text(e.labourName)),
             DataCell(Text(e.lineNo.toString())),
             DataCell(Text(e.stockOfPatiya.toString())),
@@ -84,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-   List<DataRow> rows = [];
+  List<DataRow> rows = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,11 +93,9 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
-          PopupMenuButton(
-              onSelected: (value) {
-                changeView(value);
-              },
-              itemBuilder: (BuildContext context) {
+          PopupMenuButton(onSelected: (value) {
+            changeView(value);
+          }, itemBuilder: (BuildContext context) {
             return <PopupMenuEntry>[
               PopupMenuItem(
                 value: 'Line',
@@ -114,24 +113,28 @@ class _MyHomePageState extends State<MyHomePage> {
           })
         ],
       ),
-      body: isLoading?
-          Center(
-            child: CircularProgressIndicator(),
-          )
-          :DataTable(columns: currentView=='Line'?lineColumns:columnColomn, rows: rows),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SizedBox(
+              width: double.infinity,
+              child: DataTable(
+                headingTextStyle: const TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.black),
+                  border: TableBorder.all(),
+                  columns: currentView == 'Line' ? lineColumns : columnColomn,
+                  rows: rows),
+            ),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           FloatingActionButton(
             onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => AddStockScreen())).then((value){
-
-
+              Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => AddStockScreen()))
+                  .then((value) {
                 changeView(currentView);
-
-
-
               });
             },
             tooltip: 'Increment',
@@ -143,14 +146,10 @@ class _MyHomePageState extends State<MyHomePage> {
           FloatingActionButton(
             heroTag: UniqueKey(),
             onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => AddStockScreen())).then((value){
-
-
-                      changeView(currentView);
-
-
-
+              Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => AddStockScreen()))
+                  .then((value) {
+                changeView(currentView);
               });
             },
             tooltip: 'Sell',
@@ -161,46 +160,43 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void changeView(String view){
+  void changeView(String view) {
+    currentView = view;
+    isLoading = true;
+    setState(() {});
 
-      currentView = view;
-      isLoading = true;
-      setState(() {
-
+    if (currentView == 'Column') {
+      firebaseService.getColumnData().then((value) {
+        setState(() {
+          columnData.clear();
+          columnData.addAll(value);
+          rows = columnData.reversed.toList().map((e) {
+            return DataRow(cells: [
+              DataCell(Text( DateFormat("MMMM dd, yyyy").format(e.date))),
+              DataCell(Text(e.labourName)),
+              DataCell(Text(e.type.toString())),
+              DataCell(Text(e.stock.toString())),
+            ]);
+          }).toList();
+          isLoading = false;
+        });
       });
-
-      if(currentView == 'Column'){
-        firebaseService.getColumnData().then((value) {
-          setState(() {
-            columnData.clear();
-            columnData.addAll(value);
-            rows = columnData.reversed.toList().map((e) {
-              return DataRow(cells: [
-                DataCell(Text('${e.date.year}-${e.date.month}-${e.date.day}')),
-                DataCell(Text(e.labourName)),
-                DataCell(Text(e.type.toString())),
-                DataCell(Text(e.stock.toString())),
-
-              ]);
-            }).toList();
-            isLoading = false;
-          });
+    } else if (currentView == 'Line') {
+      firebaseService.getLineData().then((value) {
+        setState(() {
+          lineData.clear();
+          lineData.addAll(value);
+          rows = lineData.reversed.toList().map((e) {
+            return DataRow(cells: [
+              DataCell(Text( DateFormat("MMMM dd, yyyy").format(e.date))),
+              DataCell(Text(e.labourName)),
+              DataCell(Text(e.lineNo.toString())),
+              DataCell(Text(e.stockOfPatiya.toString())),
+            ]);
+          }).toList();
+          isLoading = false;
         });
-  } else if(currentView =='Line'){
-        firebaseService.getLineData().then((value) {
-          setState(() {
-            lineData.clear();
-            lineData.addAll(value);
-            rows = lineData.reversed.toList().map((e) {
-              return DataRow(cells: [
-                DataCell(Text('${e.date.year}-${e.date.month}-${e.date.day}')),
-                DataCell(Text(e.labourName)),
-                DataCell(Text(e.lineNo.toString())),
-                DataCell(Text(e.stockOfPatiya.toString())),
-              ]);
-            }).toList();
-            isLoading = false;
-          });
-        });
-      }
-}}
+      });
+    }
+  }
+}

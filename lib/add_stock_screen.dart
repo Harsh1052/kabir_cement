@@ -194,13 +194,19 @@ class _AddStockScreenState extends State<AddStockScreen> {
   // get last stock of patiya
   Future<int> getLastStockOfPatiya() async {
     final lineData = await firebaseService.getLineData();
+    if(lineData.isEmpty){
+      return 0;
+    }
     final lastStock = lineData.last.stockOfPatiya;
     return lastStock;
   }
 
 // get last stock of column
   Future<int> getLastStockOfColumn(int type) async {
-    final columnData = await firebaseService.getColumnData();
+    final columnData = await firebaseService.getColumnData(type);
+    if(columnData.isEmpty){
+      return 0;
+    }
     final lastStock = columnData.last.stock;
     return lastStock;
   }

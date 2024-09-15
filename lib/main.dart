@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kabir_stock/models/column.dart';
 import 'package:kabir_stock/models/line_model.dart';
+import 'package:kabir_stock/models/sell_model.dart';
 
 import 'add_stock_screen.dart';
 import 'firebase_services.dart';
@@ -47,6 +48,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String currentView = 'Line';
+  int currentColumn = 7;
   final List<DataColumn> lineColumns = const <DataColumn>[
     DataColumn(label: Text('Date')),
     DataColumn(label: Text('L. Name')),
@@ -59,8 +61,17 @@ class _MyHomePageState extends State<MyHomePage> {
     DataColumn(label: Text('Column Type')),
     DataColumn(label: Text('Stock Of Column')),
   ];
+  final List<DataColumn> sellColumn = const <DataColumn>[
+    DataColumn(label: Text('Date')),
+    DataColumn(label: Text('To')),
+    DataColumn(label: Text('Vehicle No')),
+    DataColumn(label: Text('Quantity')),
+    DataColumn(label: Text('Type')),
+  ];
+
   final List<LineData> lineData = [];
   final List<ColumnData> columnData = [];
+  final List<SellData> sellData = [];
   final firebaseService = FirestoreService();
   bool isLoading = true;
 
@@ -74,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
         lineData.addAll(value);
         rows = lineData.reversed.toList().map((e) {
           return DataRow(cells: [
-            DataCell(Text( DateFormat("MMMM dd, yyyy").format(e.date))),
+            DataCell(Text(DateFormat("MMMM dd, yyyy").format(e.date))),
             DataCell(Text(e.labourName)),
             DataCell(Text(e.lineNo.toString())),
             DataCell(Text(e.stockOfPatiya.toString())),
@@ -86,13 +97,29 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<DataRow> rows = [];
+  List<int> columnType = [7, 8, 9, 10, 11, 12, 13, 14];
   @override
   Widget build(BuildContext context) {
+    debugPrint("Current Column: $currentColumn");
+    debugPrint("Current Column: $currentView");
+    debugPrint("Current Column: $columnType");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
+          if (currentView == 'Column')
+            DropdownButton<int>(
+                value: currentColumn,
+                items: columnType
+                    .map((e) =>
+                        DropdownMenuItem(value: e, child: Text(e.toString())))
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null || value == currentColumn) return;
+                  currentColumn = value;
+                  changeView(currentView);
+                }),
           PopupMenuButton(onSelected: (value) {
             changeView(value);
           }, itemBuilder: (BuildContext context) {
@@ -120,10 +147,14 @@ class _MyHomePageState extends State<MyHomePage> {
           : SizedBox(
               width: double.infinity,
               child: DataTable(
-                headingTextStyle: const TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.black),
+                  headingTextStyle: const TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
                   border: TableBorder.all(),
-                  columns: currentView == 'Line' ? lineColumns : columnColomn,
+                  columns: currentView == 'Line'
+                      ? lineColumns
+                      : currentView == 'Column'
+                          ? columnColomn
+                          : sellColumn,
                   rows: rows),
             ),
       floatingActionButton: Column(
@@ -166,13 +197,13 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
 
     if (currentView == 'Column') {
-      firebaseService.getColumnData().then((value) {
+      firebaseService.getColumnData(currentColumn).then((value) {
         setState(() {
           columnData.clear();
           columnData.addAll(value);
           rows = columnData.reversed.toList().map((e) {
             return DataRow(cells: [
-              DataCell(Text( DateFormat("MMMM dd, yyyy").format(e.date))),
+              DataCell(Text(DateFormat("MMMM dd, yyyy").format(e.date))),
               DataCell(Text(e.labourName)),
               DataCell(Text(e.type.toString())),
               DataCell(Text(e.stock.toString())),
@@ -188,10 +219,49 @@ class _MyHomePageState extends State<MyHomePage> {
           lineData.addAll(value);
           rows = lineData.reversed.toList().map((e) {
             return DataRow(cells: [
-              DataCell(Text( DateFormat("MMMM dd, yyyy").format(e.date))),
+              DataCell(Text(DateFormat("MMMM dd, yyyy").format(e.date))),
               DataCell(Text(e.labourName)),
               DataCell(Text(e.lineNo.toString())),
               DataCell(Text(e.stockOfPatiya.toString())),
+            ]);
+          }).toList();
+          isLoading = false;
+        });
+      });
+    } else {
+      firebaseService.getSellData().then((value) {
+        setState(() {
+          sellData.clear();
+          sellData.addAll(value);
+          rows = sellData.reversed.toList().map((e) {
+            return DataRow(cells: [
+              DataCell(Text(DateFormat("MMMM dd, yyyy").format(e.date))),
+              DataCell(Text(e.to)),
+              DataCell(Text(e.vehicleNo.toString())),
+              DataCell(Text(e.sell
+                  .map((e) => e.type.toString())
+                  .reduce((value, element) => '$value $element'))),
+              DataCell(Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: e.sell
+                    .map((e) => RichText(text: TextSpan(children: [
+                          TextSpan(
+                              text: e.quantity.toString(),
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 16)),
+                          TextSpan(
+                              text: ' ${e.type} ',
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 16)),
+                  TextSpan(
+                      text: '${e.columnType!=0?e.columnType:''}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                          color: Colors.red, fontSize: 16)),
+                        ])))
+                    .toList(),
+              )),
             ]);
           }).toList();
           isLoading = false;

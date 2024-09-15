@@ -8,10 +8,10 @@ import 'models/sell_model.dart';
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<List<ColumnData>> getColumnData() async {
+  Future<List<ColumnData>> getColumnData(int columnType) async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot =
-      await _db.collection('column').get();
+      await _db.collection('column').where("type",isEqualTo: columnType).get();
 
       return snapshot.docs.map((doc) => ColumnData.fromFirestore(doc.data())).toList();
     } catch (e) {
@@ -32,19 +32,16 @@ class FirestoreService {
     }
   }
 
-  Future<SellData?> getSellData(String documentId) async {
+  Future<List<SellData>> getSellData() async {
     try {
-      DocumentSnapshot<Map<String, dynamic>> doc =
-      await _db.collection('your_collection_name').doc(documentId).get();
+      QuerySnapshot<Map<String, dynamic>> snapshot =
+      await _db.collection('sell').get();
 
-      if (doc.exists) {
-        return SellData.fromFirestore(doc.data()!);
-      } else {
-        return null;
-      }
+      return snapshot.docs.map((doc) => SellData.fromFirestore(doc.data())).toList();
+
     } catch (e) {
       print('Error getting document: $e');
-      return null;
+      return [];
     }
   }
 

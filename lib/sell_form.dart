@@ -88,6 +88,7 @@ class _AddSellDataScreenState extends State<AddSellDataScreen> {
         final lineData = await FirestoreService().getLineData();
         final lastStock = lineData.last;
         await FirestoreService().addLineData(LineData(
+          docId: lastStock.docId,
           isSelling: true,
           date: lastStock.date,
           labourName: lastStock.labourName,
@@ -98,6 +99,7 @@ class _AddSellDataScreenState extends State<AddSellDataScreen> {
         final columnData = await FirestoreService().getColumnData(sellItems[i].columnType);
         final lastStock = columnData.last;
         await FirestoreService().addColumnData(ColumnData(
+          docId: lastStock.docId,
           isSelling: true,
           date: lastStock.date,
           labourName: lastStock.labourName,

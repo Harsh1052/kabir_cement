@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'firebase_services.dart';
+import 'models/column.dart';
+import 'models/line_model.dart';
 import 'models/sell_model.dart';
 
 class AddSellDataScreen extends StatefulWidget {
@@ -50,6 +52,7 @@ class _AddSellDataScreenState extends State<AddSellDataScreen> {
       sell: _sellItems,
       to: _toController.text,
       vehicleNo: _vehicleNoController.text,
+      docId: DateTime.timestamp().millisecondsSinceEpoch.toString()
     );
 
     if (sellData.to.isEmpty || sellData.vehicleNo.isEmpty) {
@@ -77,6 +80,31 @@ class _AddSellDataScreenState extends State<AddSellDataScreen> {
       isLoading = false;
       setState(() {});
       return;
+    }
+    // remove stock first
+    final List<SellItem> sellItems = sellData.sell;
+    for (int i = 0; i < sellItems.length; i++) {
+      if (sellItems[i].type == 'Line') {
+        final lineData = await FirestoreService().getLineData();
+        final lastStock = lineData.last;
+        await FirestoreService().addLineData(LineData(
+          isSelling: true,
+          date: lastStock.date,
+          labourName: lastStock.labourName,
+          lineNo: lastStock.lineNo,
+          stockOfPatiya: lastStock.stockOfPatiya - (sellItems[i].quantity * 30),
+        ));
+      } else {
+        final columnData = await FirestoreService().getColumnData(sellItems[i].columnType);
+        final lastStock = columnData.last;
+        await FirestoreService().addColumnData(ColumnData(
+          isSelling: true,
+          date: lastStock.date,
+          labourName: lastStock.labourName,
+          type: lastStock.type,
+          stock: lastStock.stock - sellItems[i].quantity,
+        ));
+      }
     }
 
     FirestoreService()

@@ -4,11 +4,13 @@ class SellItem {
   final int columnType;
   final int quantity;
    final String type;
+   final String? docId;
 
   SellItem({
     required this.columnType,
     required this.quantity,
     required this.type,
+    this.docId
   });
 
   factory SellItem.fromFirestore(Map<String, dynamic> data) {
@@ -16,6 +18,7 @@ class SellItem {
       columnType: data['column_type'] ?? 0,
       quantity: data['quantity'] ?? 0,
       type: data['type'] ?? '',
+
     );
   }
 
@@ -23,11 +26,13 @@ class SellItem {
     int? columnType,
     int? quantity,
     String? type,
+    String? docId,
   }) {
     return SellItem(
       columnType: columnType ?? this.columnType,
       quantity: quantity ?? this.quantity,
       type: type ?? this.type,
+
     );
   }
 
@@ -38,6 +43,7 @@ class SellItem {
       'column_type': columnType,
       'quantity': quantity,
       'type': type,
+
     };
   }
 }
@@ -47,12 +53,15 @@ class SellData {
   final List<SellItem> sell;
   final String to;
   final String vehicleNo;
+  final String? docId;
 
   SellData({
     required this.date,
     required this.sell,
     required this.to,
     required this.vehicleNo,
+    this.docId
+
   });
 
   factory SellData.fromFirestore(Map<String, dynamic> data) {
@@ -63,6 +72,7 @@ class SellData {
           .toList(),
       to: data['to'] ?? '',
       vehicleNo: data['vehicle_no'] ?? '',
+      docId: data['doc_id'] ?? '',
     );
   }
 
@@ -72,6 +82,7 @@ class SellData {
       'sell': sell.map((item) => item.toFirestore()).toList(),
       'to': to,
       'vehicle_no': vehicleNo,
+      'doc_id': docId,
     };
   }
 }

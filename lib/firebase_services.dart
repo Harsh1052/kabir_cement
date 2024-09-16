@@ -46,18 +46,18 @@ class FirestoreService {
   }
 
 
-   // Add line data to Firestore
+   // Add line data to Firestor
   Future<void> addLineData(LineData lineData) {
-    return _db.collection('line').doc(DateTime.timestamp().millisecondsSinceEpoch.toString()).set(lineData.toFirestore());
+    return _db.collection('line').doc(lineData.docId).set(lineData.toFirestore());
   }
 
   // Add column data to Firestore
   Future<void> addColumnData(ColumnData columnData) {
-    return _db.collection('column').doc(DateTime.timestamp().millisecondsSinceEpoch.toString()).set(columnData.toFirestore());
+    return _db.collection('column').doc(columnData.docId).set(columnData.toFirestore());
   }
 
   // Add sell data to Firestore
   Future<void> addSellData(SellData sellData) {
-    return _db.collection('sell').doc(DateTime.timestamp().millisecondsSinceEpoch.toString()).set(sellData.toFirestore());
+    return _db.collection('sell').doc(sellData.docId??DateTime.timestamp().millisecondsSinceEpoch.toString()).set(sellData.toFirestore());
   }
 }

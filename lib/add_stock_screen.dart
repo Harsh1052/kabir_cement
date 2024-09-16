@@ -168,6 +168,7 @@ class _AddStockScreenState extends State<AddStockScreen> {
                         int currentStock = await getLastStockOfPatiya();
 
                         await firebaseService.addLineData(LineData(
+                          docId: DateTime.timestamp().millisecondsSinceEpoch.toString(),
                           date: selectedDate!,
                           labourName: labourNameController.text,
                           lineNo: int.parse(lineController.text),
@@ -178,6 +179,7 @@ class _AddStockScreenState extends State<AddStockScreen> {
                         int lastStock = await getLastStockOfColumn(
                             int.parse(lineController.text));
                         await firebaseService.addColumnData(ColumnData(
+                          docId: DateTime.timestamp().millisecondsSinceEpoch.toString(),
                           date: selectedDate!,
                           labourName: labourNameController.text,
                           type: int.parse(lineController.text),

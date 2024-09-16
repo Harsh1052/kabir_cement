@@ -208,7 +208,9 @@ class _MyHomePageState extends State<MyHomePage> {
           columnData.clear();
           columnData.addAll(value);
           rows = columnData.reversed.toList().map((e) {
-            return DataRow(cells: [
+            return DataRow(
+                color: e.isSelling?MaterialStateProperty.all(Colors.red):null,
+                cells: [
               DataCell(Text(DateFormat("MMMM dd, yyyy").format(e.date))),
               DataCell(Text(e.labourName)),
               DataCell(Text(e.type.toString())),
@@ -224,7 +226,9 @@ class _MyHomePageState extends State<MyHomePage> {
           lineData.clear();
           lineData.addAll(value);
           rows = lineData.reversed.toList().map((e) {
-            return DataRow(cells: [
+            return DataRow(
+                color: e.isSelling ? MaterialStateProperty.all(Colors.red) : null,
+                cells: [
               DataCell(Text(DateFormat("MMMM dd, yyyy").format(e.date))),
               DataCell(Text(e.labourName)),
               DataCell(Text(e.lineNo.toString())),
@@ -240,34 +244,37 @@ class _MyHomePageState extends State<MyHomePage> {
           sellData.clear();
           sellData.addAll(value);
           rows = sellData.reversed.toList().map((e) {
-            return DataRow(cells: [
+            return DataRow(
+
+                cells: [
               DataCell(Text(DateFormat("MMMM dd, yyyy").format(e.date))),
               DataCell(Text(e.to)),
               DataCell(Text(e.vehicleNo.toString())),
-              DataCell(Text(e.sell
-                  .map((e) => e.type.toString())
-                  .reduce((value, element) => '$value $element'))),
               DataCell(Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: e.sell
                     .map((e) => RichText(text: TextSpan(children: [
-                          TextSpan(
-                              text: e.quantity.toString(),
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 16)),
-                          TextSpan(
-                              text: ' ${e.type} ',
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 16)),
+                  TextSpan(
+                      text: e.quantity.toString(),
+                      style: const TextStyle(
+                          color: Colors.black, fontSize: 16)),
+                  TextSpan(
+                      text: ' ${e.type} ',
+                      style: const TextStyle(
+                          color: Colors.black, fontSize: 16)),
                   TextSpan(
                       text: '${e.columnType!=0?e.columnType:''}',
                       style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.bold,
                           color: Colors.red, fontSize: 16)),
-                        ])))
+                ])))
                     .toList(),
               )),
+              DataCell(Text(e.sell
+                  .map((e) => e.type.toString())
+                  .reduce((value, element) => '$value $element'))),
+
             ]);
           }).toList();
           isLoading = false;

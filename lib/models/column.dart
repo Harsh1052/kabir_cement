@@ -5,12 +5,16 @@ class ColumnData {
   final String labourName;
   final int stock;
   final int type;
+  final String? docId;
+  final bool isSelling;
 
   ColumnData({
     required this.date,
     required this.labourName,
     required this.stock,
     required this.type,
+    this.docId,
+    this.isSelling=false
   });
 
   // Factory constructor to create an instance from Firestore document snapshot
@@ -20,6 +24,8 @@ class ColumnData {
       labourName: data['labour_name'] ?? '',
       stock: data['stock'] ?? 0,
       type: data['type'] ?? 0,
+      docId: data['doc_id'] ?? '',
+      isSelling: data['is_selling'] ?? false,
     );
   }
 
@@ -30,6 +36,8 @@ class ColumnData {
       'labour_name': labourName,
       'stock': stock,
       'type': type,
+      'doc_id': docId,
+      'is_selling': isSelling,
     };
   }
 }

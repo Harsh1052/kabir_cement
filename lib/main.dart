@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:kabir_stock/models/column.dart';
 import 'package:kabir_stock/models/line_model.dart';
 import 'package:kabir_stock/models/sell_model.dart';
+import 'package:kabir_stock/sell_form.dart';
 
 import 'add_stock_screen.dart';
 import 'firebase_services.dart';
@@ -144,19 +145,25 @@ class _MyHomePageState extends State<MyHomePage> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : SizedBox(
-              width: double.infinity,
-              child: DataTable(
-                  headingTextStyle: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black),
-                  border: TableBorder.all(),
-                  columns: currentView == 'Line'
-                      ? lineColumns
-                      : currentView == 'Column'
-                          ? columnColomn
-                          : sellColumn,
-                  rows: rows),
+          : SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: DataTable(
+                    headingTextStyle: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black),
+                    border: TableBorder.all(),
+                    columns: currentView == 'Line'
+                        ? lineColumns
+                        : currentView == 'Column'
+                            ? columnColomn
+                            : sellColumn,
+                    rows: rows),
+              ),
             ),
+          ),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -168,7 +175,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 changeView(currentView);
               });
             },
-            tooltip: 'Increment',
             child: const Icon(Icons.add),
           ),
           SizedBox(
@@ -178,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
             heroTag: UniqueKey(),
             onPressed: () {
               Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => AddStockScreen()))
+                      MaterialPageRoute(builder: (_) => AddSellDataScreen()))
                   .then((value) {
                 changeView(currentView);
               });

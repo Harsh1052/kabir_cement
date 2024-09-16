@@ -58,6 +58,6 @@ class FirestoreService {
 
   // Add sell data to Firestore
   Future<void> addSellData(SellData sellData) {
-    return _db.collection('sell').add(sellData.toFirestore());
+    return _db.collection('sell').doc(DateTime.timestamp().millisecondsSinceEpoch.toString()).set(sellData.toFirestore());
   }
 }

@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class SellItem {
   final int columnType;
   final int quantity;
-  final String type;
+   final String type;
 
   SellItem({
     required this.columnType,
@@ -18,6 +18,20 @@ class SellItem {
       type: data['type'] ?? '',
     );
   }
+
+  SellItem copyWith({
+    int? columnType,
+    int? quantity,
+    String? type,
+  }) {
+    return SellItem(
+      columnType: columnType ?? this.columnType,
+      quantity: quantity ?? this.quantity,
+      type: type ?? this.type,
+    );
+  }
+
+
 
   Map<String, dynamic> toFirestore() {
     return {

@@ -151,9 +151,18 @@ class _AddStockScreenState extends State<AddStockScreen> {
                           const Size(double.maxFinite, 50)),
                     ),
                     onPressed: () async {
-                      if (selectedDate == null) {
+                      if (selectedDate == null || labourNameController.text.isEmpty || lineController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please fill all the fields'),
+                          ),
+                        );
                         return;
                       }
+                      isLoading = true;
+                      setState(() {
+
+                      });
 
                       if (selectedType.value == 'Line') {
                         int currentStock = await getLastStockOfPatiya();

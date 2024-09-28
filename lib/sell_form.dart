@@ -118,33 +118,35 @@ class _AddSellDataScreenState extends State<AddSellDataScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Add Sell Data')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Date Picker
-            ListTile(
-              title: Text(
-                  'Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}'),
-              trailing: const Icon(Icons.calendar_today),
-              onTap: () => _selectDate(context),
-            ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Date Picker
+              ListTile(
+                title: Text(
+                    'Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}'),
+                trailing: const Icon(Icons.calendar_today),
+                onTap: () => _selectDate(context),
+              ),
 
-            // Input for 'to'
-            TextField(
-              controller: _toController,
-              decoration: const InputDecoration(labelText: 'To'),
-            ),
+              // Input for 'to'
+              TextField(
+                controller: _toController,
+                decoration: const InputDecoration(labelText: 'To'),
+              ),
 
-            // Input for 'vehicleNo'
-            TextField(
-              controller: _vehicleNoController,
-              decoration: const InputDecoration(labelText: 'Vehicle Number'),
-            ),
+              // Input for 'vehicleNo'
+              TextField(
+                controller: _vehicleNoController,
+                decoration: const InputDecoration(labelText: 'Vehicle Number'),
+              ),
 
-            // List of Sell Items
-            Expanded(
-              child: ListView.builder(
+              // List of Sell Items
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
                 itemCount: _sellItems.length,
                 itemBuilder: (context, index) {
                   return SellItemForm(
@@ -158,33 +160,33 @@ class _AddSellDataScreenState extends State<AddSellDataScreen> {
                   );
                 },
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                minimumSize: Size(double.infinity, 40),
+              SizedBox(
+                height: 20,
               ),
-              onPressed: _addSellItem,
-              child: Text('Add Sell Item'),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            // Button to save data
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                minimumSize: Size(double.infinity, 40),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  minimumSize: Size(double.infinity, 40),
+                ),
+                onPressed: _addSellItem,
+                child: Text('Add Sell Item'),
               ),
-              onPressed: _saveSellData,
-              child: isLoading?const Center(
-                child: CircularProgressIndicator(),
-              ):const Text('Save Data'),
-            ),
-          ],
+              SizedBox(
+                height: 15,
+              ),
+              // Button to save data
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  minimumSize: Size(double.infinity, 40),
+                ),
+                onPressed: _saveSellData,
+                child: isLoading?const Center(
+                  child: CircularProgressIndicator(),
+                ):const Text('Save Data'),
+              ),
+            ],
+          ),
         ),
       ),
     );

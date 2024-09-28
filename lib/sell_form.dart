@@ -93,7 +93,7 @@ class _AddSellDataScreenState extends State<AddSellDataScreen> {
           date: lastStock.date,
           labourName: lastStock.labourName,
           lineNo: lastStock.lineNo,
-          stockOfPatiya: lastStock.stockOfPatiya - (sellItems[i].quantity * 30),
+          stockOfPatiya: lastStock.stockOfPatiya - (sellItems[i].quantity),
         ));
       } else {
         final columnData = await FirestoreService().getColumnData(sellItems[i].columnType);
